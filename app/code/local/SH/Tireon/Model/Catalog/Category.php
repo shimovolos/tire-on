@@ -35,7 +35,7 @@ class SH_Tireon_Model_Catalog_Category extends SH_Tireon_Model_Catalog_Abstract
 
             try {
 
-                $categoryCollection = $this->checkExistingModel('catalog/category', array('field' => 'url_key', 'value' => $urlKey));
+                $categoryCollection = Mage::helper('sh_tireon')->checkExistingModel('catalog/category', array('field' => 'url_key', 'value' => $urlKey));
 
                 if($categoryCollection->isEmpty()) {
                     $categoryModel

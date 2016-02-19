@@ -3,7 +3,7 @@
 /**
  * Class SH_Tireon_Model_Catalog_Product
  */
-class SH_Tireon_Model_Catalog_Product extends SH_Tireon_Model_Catalog_Abstract
+class SH_Tireon_Model_Catalog_Product
 {
 
     const CSV_COLUMN_CATEGORY = 'Категория';
@@ -41,35 +41,35 @@ class SH_Tireon_Model_Catalog_Product extends SH_Tireon_Model_Catalog_Abstract
                     ->setAttributeSetId($productModel->getDefaultAttributeSetId())
                     ->setWebsiteIDs(array(1));
 
-                $issetProduct = $this->checkExistingModel(
+                $issetProduct = $shHelper->checkExistingModel(
                     'catalog/product',
-                    array('field' => 'sku', 'value' => $shHelper->transliterate($value[$this->encoding(self::CSV_COLUMN_PRODUCT_NAME)]))
+                    array('field' => 'sku', 'value' => $shHelper->transliterate($value[$shHelper->encoding(self::CSV_COLUMN_PRODUCT_NAME)]))
                 );
 
                 if (!$issetProduct->isEmpty()) {
                     $productModel = $productModel->load($issetProduct->getId());
                 }
-                $productCategoryId = $this->_getProductCategoryId($value[$this->encoding(self::CSV_COLUMN_CATEGORY)]);
+                $productCategoryId = $this->_getProductCategoryId($value[$shHelper->encoding(self::CSV_COLUMN_CATEGORY)]);
                 $productModel
                     ->setCategoryIds(array($productCategoryId))
                     ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
                     ->setVisibility(Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH)
-                    ->setSku($shHelper->transliterate($value[$this->encoding(self::CSV_COLUMN_PRODUCT_NAME)]))
-                    ->setName($value[$this->encoding(self::CSV_COLUMN_PRODUCT_NAME)])
-                    ->setShortDescription($value[$this->encoding(self::CSV_COLUMN_PRODUCT_NAME)])
-                    ->setPrice($this->_calProductFinalPrice($value[$this->encoding(self::CSV_COLUMN_PRODUCT_PRICE)]))
+                    ->setSku($shHelper->transliterate($value[$shHelper->encoding(self::CSV_COLUMN_PRODUCT_NAME)]))
+                    ->setName($value[$shHelper->encoding(self::CSV_COLUMN_PRODUCT_NAME)])
+                    ->setShortDescription($value[$shHelper->encoding(self::CSV_COLUMN_PRODUCT_NAME)])
+                    ->setPrice($this->_calProductFinalPrice($value[$shHelper->encoding(self::CSV_COLUMN_PRODUCT_PRICE)]))
                     ->setWeight(0)
                     ->setStockData(array(
                             'use_config_manage_stock' => 0,
                             'manage_stock' => 1,
                             'is_in_stock' => 1,
-                            'qty' => $this->_setProductQty($value[$this->encoding(self::CSV_COLUMN_PRODUCT_COUNT)]),
+                            'qty' => $this->_setProductQty($value[$shHelper->encoding(self::CSV_COLUMN_PRODUCT_COUNT)]),
                         )
                     );
 
                 foreach ($value as $key => $productValue) {
-                    if ($key != $this->encoding(self::CSV_COLUMN_PRODUCT_COUNT) && $key != $this->encoding(self::CSV_COLUMN_PRODUCT_PRICE) &&
-                        $key != $this->encoding(self::CSV_COLUMN_PRODUCT_NAME) && $key != $this->encoding(self::CSV_COLUMN_CATEGORY)
+                    if ($key != $shHelper->encoding(self::CSV_COLUMN_PRODUCT_COUNT) && $key != $shHelper->encoding(self::CSV_COLUMN_PRODUCT_PRICE) &&
+                        $key != $shHelper->encoding(self::CSV_COLUMN_PRODUCT_NAME) && $key != $shHelper->encoding(self::CSV_COLUMN_CATEGORY)
                     ) {
                         $productModel->setData($shHelper->transliterate($key), $productValue);
                     }
