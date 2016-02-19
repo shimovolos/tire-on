@@ -121,54 +121,58 @@ class SH_Tireon_Model_CSV
             $productModel = Mage::getModel('catalog/product');
             /* @var $productModel Mage_Catalog_Model_Product */
 
-            $productModel
-                ->setTypeId(Mage_Catalog_Model_Product_Type::TYPE_SIMPLE)
-                ->setAttributeSetId($productModel->getDefaultAttributeSetId())
-                ->setWebsiteIDs(array(1));
+            try {
+                $productModel
+                    ->setTypeId(Mage_Catalog_Model_Product_Type::TYPE_SIMPLE)
+                    ->setAttributeSetId($productModel->getDefaultAttributeSetId())
+                    ->setWebsiteIDs(array(1));
 
-            if (!$this->_checkProductIfExist($productModel, Mage::helper('sh_tireon')->transliterate($value[$this->_encoding(self::CSV_COLUMN_PRODUCT_NAME)]))) {
+                if (!$this->_checkProductIfExist($productModel, Mage::helper('sh_tireon')->transliterate($value[$this->_encoding(self::CSV_COLUMN_PRODUCT_NAME)]))) {
 
-                foreach ($value as $key => $productValue) {
+                    foreach ($value as $key => $productValue) {
 
-                    if ($key === $this->_encoding(self::CSV_COLUMN_CATEGORY)) {
+                        if ($key === $this->_encoding(self::CSV_COLUMN_CATEGORY)) {
 
-                        $productCategoryId = $this->_getProductCategoryId($productValue);
-                        $productModel
-                            ->setCategoryIds(array($productCategoryId))
-                            ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
-                            ->setVisibility(Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);
+                            $productCategoryId = $this->_getProductCategoryId($productValue);
+                            $productModel
+                                ->setCategoryIds(array($productCategoryId))
+                                ->setStatus(Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
+                                ->setVisibility(Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);
 
-                    } elseif ($key == $this->_encoding(self::CSV_COLUMN_PRODUCT_NAME)) {
+                        } elseif ($key == $this->_encoding(self::CSV_COLUMN_PRODUCT_NAME)) {
 
-                        $productModel
-                            ->setSku(Mage::helper('sh_tireon')->transliterate($productValue))
-                            ->setName($productValue)
-                            ->setShortDescription($productValue);
+                            $productModel
+                                ->setSku(Mage::helper('sh_tireon')->transliterate($productValue))
+                                ->setName($productValue)
+                                ->setShortDescription($productValue);
 
-                    } elseif ($key == $this->_encoding(self::CSV_COLUMN_PRODUCT_COUNT)) {
+                        } elseif ($key == $this->_encoding(self::CSV_COLUMN_PRODUCT_COUNT)) {
 
-                        $qty = (strpos($productValue, '>') !== false) ? Mage::getStoreConfig('sh_tireon_settings/general/count') : str_replace('>', '', $productValue);
+                            $qty = (strpos($productValue, '>') !== false) ? Mage::getStoreConfig('sh_tireon_settings/general/count') : str_replace('>', '', $productValue);
 
-                        $productModel->setStockData(array(
-                                'use_config_manage_stock' => 0,
-                                'manage_stock' => 1,
-                                'is_in_stock' => 1,
-                                'qty' => $qty,
-                            )
-                        );
-                    } elseif ($key == $this->_encoding(self::CSV_COLUMN_PRODUCT_PRICE)) {
+                            $productModel->setStockData(array(
+                                    'use_config_manage_stock' => 0,
+                                    'manage_stock' => 1,
+                                    'is_in_stock' => 1,
+                                    'qty' => $qty,
+                                )
+                            );
+                        } elseif ($key == $this->_encoding(self::CSV_COLUMN_PRODUCT_PRICE)) {
 
-                        $finalPrice = $productValue + ($productValue/100) * Mage::getStoreConfig('sh_tireon_settings/general/price_percent');
-                        $finalPrice = round($finalPrice, -Mage::getStoreConfig('sh_tireon_settings/general/round'));
-                        $productModel
-                            ->setPrice($finalPrice)
-                            ->setWeight(0);
+                            $finalPrice = $productValue + ($productValue/100) * Mage::getStoreConfig('sh_tireon_settings/general/price_percent');
+                            $finalPrice = round($finalPrice, -Mage::getStoreConfig('sh_tireon_settings/general/round'));
+                            $productModel
+                                ->setPrice($finalPrice)
+                                ->setWeight(0);
 
-                    } else {
-                        $productModel->setData(Mage::helper('sh_tireon')->transliterate($key), $productValue);
+                        } else {
+                            $productModel->setData(Mage::helper('sh_tireon')->transliterate($key), $productValue);
+                        }
                     }
+                    $productModel->save();
                 }
-                $productModel->save();
+            } catch (Exception $e) {
+                Mage::throwException($e->getMessage());
             }
         }
     }
