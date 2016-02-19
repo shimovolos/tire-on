@@ -18,56 +18,21 @@ class SH_Tireon_Model_CSV
     /**
      * @var $csvPath
      */
-    private $_csvPath;
+    protected $_csvPath;
 
     /**
      * @var array
      */
-    private $_category = array();
+    protected $_category = array();
 
     /**
      * @var array
      */
-    private $_product = array();
+    protected $_product = array();
 
     public function __construct()
     {
         $this->_parseCsv();
-    }
-
-    /**
-     * Parse CSV File
-     */
-    private function _parseCsv()
-    {
-        $csvFile = $this->_getCsvPath() . DS . self::CSV_FILE_NAME;
-
-        try {
-            $csv = new Varien_File_Csv();
-            /* @var $csv Varien_File_Csv*/
-            $csv->setDelimiter(';');
-            $data = $csv->getData($csvFile);
-
-            $columns = $data[0];
-            unset($data[0]);
-            foreach($data as $key => $value) {
-                $this->_category[] = current($value);
-                $this->_product[] = array_combine($columns, $value);
-            }
-            $this->_category = array_unique($this->_category);
-
-        } catch (Exception $e) {
-            Mage::throwException($e->getMessage());
-        }
-
-    }
-
-    /**
-     * @return string
-     */
-    private function _getCsvPath()
-    {
-        return $this->_csvPath = Mage::getBaseDir('code') . DS . 'local' . DS .'SH' . DS .'Tireon' . DS . 'data' . DS;
     }
 
     /**
@@ -178,10 +143,45 @@ class SH_Tireon_Model_CSV
     }
 
     /**
+     * Parse CSV File
+     */
+    protected function _parseCsv()
+    {
+        $csvFile = $this->_getCsvPath() . DS . self::CSV_FILE_NAME;
+
+        try {
+            $csv = new Varien_File_Csv();
+            /* @var $csv Varien_File_Csv*/
+            $csv->setDelimiter(';');
+            $data = $csv->getData($csvFile);
+
+            $columns = $data[0];
+            unset($data[0]);
+            foreach($data as $key => $value) {
+                $this->_category[] = current($value);
+                $this->_product[] = array_combine($columns, $value);
+            }
+            $this->_category = array_unique($this->_category);
+
+        } catch (Exception $e) {
+            Mage::throwException($e->getMessage());
+        }
+
+    }
+
+    /**
+     * @return string
+     */
+    protected function _getCsvPath()
+    {
+        return $this->_csvPath = Mage::getBaseDir('code') . DS . 'local' . DS .'SH' . DS .'Tireon' . DS . 'data' . DS;
+    }
+
+    /**
      * @param $categoryName
      * @return mixed
      */
-    private function _getProductCategoryId($categoryName)
+    protected function _getProductCategoryId($categoryName)
     {
         $urlKey = Mage::helper('sh_tireon')->transliterate($categoryName);
         $categoryCollection = Mage::getModel('catalog/category')
@@ -196,7 +196,7 @@ class SH_Tireon_Model_CSV
      * @param $var
      * @return string
      */
-    private function _encoding($var)
+    protected function _encoding($var)
     {
         return mb_convert_encoding($var, 'UTF-8', 'Windows-1251');
     }
@@ -206,7 +206,7 @@ class SH_Tireon_Model_CSV
      * @param $sku
      * @return bool
      */
-    private function _checkProductIfExist($productModel, $sku)
+    protected function _checkProductIfExist($productModel, $sku)
     {
         $productCollection = $productModel
             ->getCollection()
