@@ -3,7 +3,7 @@
 /**
  * Class SH_Tireon_Model_Catalog_Category
  */
-class SH_Tireon_Model_Catalog_Category extends SH_Tireon_Model_Catalog_Abstract
+class SH_Tireon_Model_Catalog_Category
 {
     /**
      * @var array

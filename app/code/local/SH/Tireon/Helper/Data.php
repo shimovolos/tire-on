@@ -24,12 +24,13 @@ class SH_Tireon_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @param $var
-     * @return string
+     * Set UTF-8 charset by default for products
      */
-    public function encoding($var)
+    public function encoding()
     {
-        return mb_convert_encoding($var, 'UTF-8', 'Windows-1251');
+        mysql_query("SET NAMES 'utf8'");
+        mysql_query("SET CHARACTER SET 'utf8'");
+        mysql_query("SET SESSION collation_connection = 'utf8_general_ci'");
     }
 
     /**
